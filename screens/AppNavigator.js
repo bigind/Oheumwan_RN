@@ -22,6 +22,10 @@ const screenOptions = ({ route }) => ({
     height: 60,
     backgroundColor: "#fff"
   },
+  tabBarLabelStyle: {
+    fontSize: 14, 
+    fontWeight: 'bold', 
+  },
   tabBarIcon: ({ focused, color, size }) => {
     let iconName;
     switch (route.name) {
@@ -32,7 +36,7 @@ const screenOptions = ({ route }) => ({
             iconName = focused ? 'md-chatbubbles' : 'md-chatbubbles-outline';
             break;
         case '추가':
-            iconName = focused ? 'add-circle' : 'add-circle-outline';
+            iconName = focused ? 'camera' : 'camera-outline';
             break;
         case '보관함':
             iconName = focused ? 'fast-food-sharp' : 'fast-food-outline';
@@ -41,10 +45,24 @@ const screenOptions = ({ route }) => ({
             iconName = focused ? 'person' : 'person-outline';
             break;
       
-      
       default:
         iconName = focused ? 'home' : 'home-outline';
     }
+
+    // 추가 버튼탭의 크기를 조정하기 위한 코드
+    if (route.name === '추가') {
+      return (
+        <View style={{
+          width: 60, // 원하는 너비로 조절하세요
+          height: 60, // 원하는 높이로 조절하세요
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          <Ionicons name={iconName} size={size + 6} color={color} />
+        </View>
+      );
+    }
+    
     return <Ionicons name={iconName} size={size} color={color} />;
   },
   tabBarActiveTintColor: 'black',
@@ -57,7 +75,7 @@ export default function AppNavigator() {
         <Tab.Navigator screenOptions={screenOptions}>
             <Tab.Screen name="홈" component={HomeScreen} />
             <Tab.Screen name="커뮤니티" component={CommunityScreen} />
-            <Tab.Screen name="추가" component={Add} options={{tabBarShowLabel:true}}/>
+            <Tab.Screen name="추가" component={Add} options={{ tabBarLabel: '카메라' }}/>
             <Tab.Screen name="보관함" component={MyboxScreen} />
             <Tab.Screen name="프로필" component={ProfileScreen} />
         </Tab.Navigator>
