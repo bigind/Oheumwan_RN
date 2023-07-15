@@ -1,19 +1,19 @@
-import { Button, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { Camera } from 'expo-camera';
 import { useState, useEffect } from 'react';
-import * as MediaLibrary from 'expo-media-library';
 
-export default function Oheumwan_Camera() {
+// Import the camera exit icon
+import { Ionicons } from '@expo/vector-icons';
+
+export default function Oheumwan_Camera({ onClose }) {
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [camera, setCamera] = useState(null);
-  const [galleryPermission, requestGalleryPermission] = MediaLibrary.usePermissions();
-  const [lastPhoto, setLastPhoto] = useState(null);
 
   useEffect(() => {
     (async () => {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
+      const { status } = await Camera.requestCameraPermissionsAsync();
       if (status !== 'granted') {
-        alert('죄송합니다. 사진을 저장하기 위해 갤러리 접근 권한이 필요합니다!');
+        alert('카메라 접근 권한이 필요합니다!');
       }
     })();
   }, []);
@@ -27,55 +27,35 @@ export default function Oheumwan_Camera() {
     );
   }
 
-  if (!galleryPermission || !galleryPermission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>갤러리 접근을 위한 권한이 필요합니다</Text>
-        <Button onPress={requestGalleryPermission} title="갤러리 접근 허용하기" />
-      </View>
-    );
-  }
-
   async function takePicture() {
     if (camera) {
       const photo = await camera.takePictureAsync();
-      savePicture(photo.uri);
+      console.log('찍은 사진:', photo);
     }
   }
 
-  async function savePicture(photoUri) {
-    try {
-      await MediaLibrary.saveToLibraryAsync(photoUri);
-      setLastPhoto(photoUri);
-      alert('사진이 갤러리에 저장되었습니다!');
-    } catch (error) {
-      console.error('갤러리에 사진 저장 중 오류 발생', error);
-      alert('사진을 갤러리에 저장하는 데 실패했습니다');
-    }
+  function exitCamera() {
+    // 카메라 종료 동작 수행
+    onClose(); // 모달을 닫기 위해 onClose 함수 호출
   }
 
   return (
     <View style={styles.container}>
-      <Camera
-        style={styles.camera}
-        type={Camera.Constants.Type.back}
-        ref={(ref) => setCamera(ref)}
-      >
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
-            {/* 셔터 버튼 */}
-            <View style={styles.captureInnerButton} />
-          </TouchableOpacity>
-        </View>
-      </Camera>
-      {lastPhoto && (
-        <TouchableOpacity
-          style={styles.galleryButton}
-          onPress={() => alert('갤러리 버튼이 눌렸습니다')} // 원하는 동작으로 변경해주세요
-        >
-          <Image source={{ uri: lastPhoto }} style={styles.galleryImage} />
+      <View style={styles.topSection}>
+        <Camera
+          style={styles.camera}
+          type={Camera.Constants.Type.back}
+          ref={(ref) => setCamera(ref)}
+        />
+      </View>
+      <View style={styles.bottomSection}>
+        <TouchableOpacity style={styles.exitButton} onPress={exitCamera}>
+          <Ionicons name="exit-outline" size={30} color="white" />
         </TouchableOpacity>
-      )}
+        <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
+          <View style={styles.captureInnerButton} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -83,16 +63,21 @@ export default function Oheumwan_Camera() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+  },
+  topSection: {
+    flex: 4,
+    backgroundColor: 'black',
   },
   camera: {
     flex: 1,
   },
-  buttonContainer: {
+  bottomSection: {
     flex: 1,
-    justifyContent: 'flex-end', // 하단 정렬
+    backgroundColor: 'black',
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 40, // 하단 여백
+    paddingHorizontal: 20,
   },
   captureButton: {
     width: 80,
@@ -102,25 +87,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  captureInnerButton: {
-    width: 60, // 작은 크기
-    height: 60, // 작은 크기
-    borderRadius: 30, // 더 동그랗게
-    backgroundColor: 'red',
-  },
-  galleryButton: {
+  exitButton: {
     position: 'absolute',
-    bottom: 40,
-    left: 20,
-    width: 60,
-    height: 60,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  galleryImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 5,
+    bottom: 60,
+    right: 20,
   },
 });

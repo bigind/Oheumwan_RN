@@ -8,7 +8,7 @@ const HomeScreen = () => {
   return (
     <View style={{ flex: 1, paddingTop: 40 }}>
       <WebView
-        source={{ uri: `${server}/` }}
+        source={{ uri: `${server}/home` }}
       />
     </View>
     // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
