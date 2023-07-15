@@ -1,8 +1,6 @@
 import { Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { Camera } from 'expo-camera';
 import { useState, useEffect } from 'react';
-
-// Import the camera exit icon
 import { Ionicons } from '@expo/vector-icons';
 
 export default function Oheumwan_Camera({ onClose }) {
@@ -30,13 +28,14 @@ export default function Oheumwan_Camera({ onClose }) {
   async function takePicture() {
     if (camera) {
       const photo = await camera.takePictureAsync();
-      console.log('찍은 사진:', photo);
+      console.log("사진 정보 : ",photo)
+      onClose(photo); // 찍은 사진을 Add 컴포넌트로 전달합니다
     }
   }
 
   function exitCamera() {
     // 카메라 종료 동작 수행
-    onClose(); // 모달을 닫기 위해 onClose 함수 호출
+    onClose(null); // 모달을 닫고 찍은 사진이 없음을 나타내기 위해 null을 전달합니다
   }
 
   return (
