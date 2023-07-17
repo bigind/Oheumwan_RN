@@ -3,7 +3,7 @@ import { Camera } from 'expo-camera';
 import { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function Oheumwan_Camera({ onClose }) {
+export default function Oheumwan_Camera({ onClose, onCapture }) {
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [camera, setCamera] = useState(null);
 
@@ -29,13 +29,12 @@ export default function Oheumwan_Camera({ onClose }) {
     if (camera) {
       const photo = await camera.takePictureAsync();
       console.log("사진 정보 : ",photo)
-      onClose(photo); // 찍은 사진을 Add 컴포넌트로 전달합니다
+      onCapture(photo); // 찍은 사진을 Add 컴포넌트로 전달합니다
     }
   }
 
   function exitCamera() {
-    // 카메라 종료 동작 수행
-    onClose(null); // 모달을 닫고 찍은 사진이 없음을 나타내기 위해 null을 전달합니다
+    onClose(); // 카메라 종료 동작 수행
   }
 
   return (

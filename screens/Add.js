@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { TouchableOpacity, Modal, View, StyleSheet, Text, Image } from 'react-native';
 import Oheumwan_Camera from "../camera/camera";
 import { WebView } from 'react-native-webview';
@@ -6,26 +6,35 @@ import { server } from "../server";
 
 const Add = () => {
   const [isCameraVisible, setCameraVisible] = useState(false);
-  const [capturedPhoto, setCapturedPhoto] = useState(null);
+  const [isWebViewVisible, setWebViewVisible] = useState(false);
 
   const webViewRef = useRef(null); // WebView의 ref 설정
 
-  const openCamera = () => {
-    setCameraVisible(true);
-    setCapturedPhoto(null);
+  const sendMessageToWebView = (photo) => {
+    const message = 'Hello from React Native!';
+    console.log("2: ",photo)
+    setTimeout(() => {
+      webViewRef.current.postMessage(JSON.stringify(photo.uri));
+      console.log('데이터 보냄');
+    }, 1000);
   };
 
-  const closeCamera = (photo) => {
-    setCapturedPhoto(photo);
+  // 카메라 시작
+  const openCamera = () => {
+    setCameraVisible(true);
+  };
+  // 카메라 종료
+  const closeCamera = () => {
     setCameraVisible(false);
   };
 
   return (
-    capturedPhoto ?
+    isWebViewVisible ?
       (<View style={{ flex: 1, paddingTop: 40 }}>
         <WebView
           ref={webViewRef}
           source={{ uri: `${server}/getimage` }}
+          javaScriptEnabled={true}
         />
       </View>)
       :
@@ -41,7 +50,10 @@ const Add = () => {
           <Oheumwan_Camera
             onClose={closeCamera}
             onCapture={(photo) => {
-              closeCamera(photo);
+              closeCamera;
+              setWebViewVisible(true);
+              console.log("1: ",photo);
+              sendMessageToWebView(photo)
             }}
           />
         </Modal>
