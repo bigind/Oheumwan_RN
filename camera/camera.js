@@ -29,7 +29,8 @@ export default function Oheumwan_Camera({ onClose, onCapture }) {
     if (camera) {
       const photo = await camera.takePictureAsync();
       console.log("사진 정보 : ",photo)
-      onCapture(photo); // 찍은 사진을 Add 컴포넌트로 전달합니다
+      const ImagePath = photo.uri.substring(photo.uri.lastIndexOf('/') + 1)
+      onCapture(ImagePath); // 찍은 사진을 Add 컴포넌트로 전달합니다
     }
   }
 

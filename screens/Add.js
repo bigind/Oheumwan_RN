@@ -10,12 +10,11 @@ const Add = () => {
 
   const webViewRef = useRef(null); // WebView의 ref 설정
 
-  const sendMessageToWebView = (photo) => {
-    const message = 'Hello from React Native!';
-    console.log("2: ",photo)
+  const sendMessageToWebView = (ImagePath) => {
+    // const message = 'Hello from React Native!';
     setTimeout(() => {
-      webViewRef.current.postMessage(JSON.stringify(photo.uri));
-      console.log('데이터 보냄');
+      webViewRef.current.postMessage(ImagePath);
+      console.log('이미지 경로 전송');
     }, 1000);
   };
 
@@ -49,11 +48,10 @@ const Add = () => {
         <Modal visible={isCameraVisible} animationType="slide">
           <Oheumwan_Camera
             onClose={closeCamera}
-            onCapture={(photo) => {
+            onCapture={(ImagePath) => {
               closeCamera;
               setWebViewVisible(true);
-              console.log("1: ",photo);
-              sendMessageToWebView(photo)
+              sendMessageToWebView(ImagePath)
             }}
           />
         </Modal>
