@@ -4,6 +4,7 @@ import Oheumwan_Camera from "../camera/camera";
 import ImagePickerExample from "../camera/imagePicker";
 import { WebView } from 'react-native-webview';
 import { server } from "../server";
+import useImageUpload from "../apis/useImageUpload"
 
 const Add = () => {
   const [isCameraVisible, setCameraVisible] = useState(false);
@@ -12,10 +13,12 @@ const Add = () => {
 
   const webViewRef = useRef(null); // WebView의 ref 설정
 
-  const sendMessageToWebView = (ImagePath) => {
-    // const message = 'Hello from React Native!';
+  const { sendImageToServer, isLoading, isError } = useImageUpload();
+
+  const sendMessageToWebView = (filename) => {
+    const obj = { filename, isLoading, isError } 
     setTimeout(() => {
-      webViewRef.current.postMessage(ImagePath);
+      webViewRef.current.postMessage(JSON.stringify(obj));
       console.log('이미지 경로 전송');
     }, 1000);
   };
@@ -41,10 +44,11 @@ const Add = () => {
         <Modal visible={isCameraVisible} animationType="slide">
           <Oheumwan_Camera
             onClose={() => setCameraVisible(false)}
-            onCapture={(ImagePath) => {
+            onCapture={(filename, base64Data) => {
               setCameraVisible(false);
               setWebViewVisible(true);
-              sendMessageToWebView(ImagePath)
+              sendMessageToWebView(filename);
+              sendImageToServer(filename, base64Data);
             }}
           />
         </Modal>

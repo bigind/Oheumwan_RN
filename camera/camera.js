@@ -2,6 +2,7 @@ import { Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-n
 import { Camera } from 'expo-camera';
 import { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import convertImageToBase64 from "../utils/convertImageToBase64"
 
 export default function Oheumwan_Camera({ onClose, onCapture }) {
   const [permission, requestPermission] = Camera.useCameraPermissions();
@@ -29,8 +30,9 @@ export default function Oheumwan_Camera({ onClose, onCapture }) {
     if (camera) {
       const photo = await camera.takePictureAsync();
       console.log("사진 정보 : ",photo)
-      const ImagePath = photo.uri.substring(photo.uri.lastIndexOf('/') + 1)
-      onCapture(ImagePath); // 찍은 사진을 Add 컴포넌트로 전달합니다
+      const filename = photo.uri.substring(photo.uri.lastIndexOf('/') + 1)
+      const base64Data = await convertImageToBase64(photo.uri)
+      onCapture(filename, base64Data); // 찍은 사진을 Add 컴포넌트로 전달합니다
     }
   }
 
