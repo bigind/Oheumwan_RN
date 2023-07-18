@@ -19,7 +19,7 @@ const Add = () => {
     const obj = { filename, isLoading, isError } 
     setTimeout(() => {
       webViewRef.current.postMessage(JSON.stringify(obj));
-      console.log('이미지 경로 전송');
+      console.log(filename, ' 이미지 웹뷰로 전송');
     }, 1000);
   };
 
@@ -45,10 +45,10 @@ const Add = () => {
           <Oheumwan_Camera
             onClose={() => setCameraVisible(false)}
             onCapture={(filename, base64Data) => {
+              sendImageToServer(filename, base64Data);
               setCameraVisible(false);
               setWebViewVisible(true);
               sendMessageToWebView(filename);
-              sendImageToServer(filename, base64Data);
             }}
           />
         </Modal>

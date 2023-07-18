@@ -1,6 +1,7 @@
+import { useState, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { Camera } from 'expo-camera';
-import { useState, useEffect } from 'react';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { Ionicons } from '@expo/vector-icons';
 import convertImageToBase64 from "../utils/convertImageToBase64"
 
@@ -30,8 +31,13 @@ export default function Oheumwan_Camera({ onClose, onCapture }) {
     if (camera) {
       const photo = await camera.takePictureAsync();
       console.log("사진 정보 : ",photo)
-      const filename = photo.uri.substring(photo.uri.lastIndexOf('/') + 1)
-      const base64Data = await convertImageToBase64(photo.uri)
+
+      // 이미지를 1MB 이하로 리사이징합니다.
+      const resizedPhoto = await manipulateAsync(photo.uri, [{ resize: {width: photo.width/4, height: photo.height/4}}], {format: SaveFormat.JPEG});
+      console.log("사진 리사이징 : ",resizedPhoto);
+
+      const filename = resizedPhoto.uri.substring(resizedPhoto.uri.lastIndexOf('/') + 1)
+      const base64Data = await convertImageToBase64(resizedPhoto.uri) // 이미지를 Base64로 변환합니다.
       onCapture(filename, base64Data); // 찍은 사진을 Add 컴포넌트로 전달합니다
     }
   }
