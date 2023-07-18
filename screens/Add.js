@@ -18,15 +18,6 @@ const Add = () => {
     }, 1000);
   };
 
-  // 카메라 시작
-  const openCamera = () => {
-    setCameraVisible(true);
-  };
-  // 카메라 종료
-  const closeCamera = () => {
-    setCameraVisible(false);
-  };
-
   return (
     isWebViewVisible ?
       (<View style={{ flex: 1, paddingTop: 40 }}>
@@ -38,7 +29,7 @@ const Add = () => {
       </View>)
       :
       (<View style={styles.modalContainer}>
-        <TouchableOpacity style={styles.buttonWrapper} onPress={openCamera}>
+        <TouchableOpacity style={styles.buttonWrapper} onPress={() => setCameraVisible(true)}>
           <Text style={styles.buttonText}>이미지 인식</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.buttonWrapper} onPress={() => { /* 레시피 추천 버튼을 눌렀을 때 실행되는 함수 */ }}>
@@ -47,9 +38,9 @@ const Add = () => {
 
         <Modal visible={isCameraVisible} animationType="slide">
           <Oheumwan_Camera
-            onClose={closeCamera}
+            onClose={() => setCameraVisible(false)}
             onCapture={(ImagePath) => {
-              closeCamera;
+              setCameraVisible(false);
               setWebViewVisible(true);
               sendMessageToWebView(ImagePath)
             }}

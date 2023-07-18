@@ -34,10 +34,6 @@ export default function Oheumwan_Camera({ onClose, onCapture }) {
     }
   }
 
-  function exitCamera() {
-    onClose(); // 카메라 종료 동작 수행
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.topSection}>
@@ -48,11 +44,10 @@ export default function Oheumwan_Camera({ onClose, onCapture }) {
         />
       </View>
       <View style={styles.bottomSection}>
-        <TouchableOpacity style={styles.exitButton} onPress={exitCamera}>
+        <TouchableOpacity style={styles.exitButton} onPress={() => onClose()}>
           <Ionicons name="exit-outline" size={30} color="white" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
-          <View style={styles.captureInnerButton} />
         </TouchableOpacity>
       </View>
     </View>
