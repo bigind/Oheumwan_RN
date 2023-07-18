@@ -5,24 +5,24 @@ import { WebView } from 'react-native-webview';
 import { server } from "../server";
 
 const HomeScreen = () => {
-  const webViewRef = useRef(null);
-
-  useEffect(() => {
-    sendMessageToWebView();
-  }, []);
-
-  const sendMessageToWebView = () => {
-    const message = 'Hello from React Native!';
-    setTimeout(() => {
-      webViewRef.current.postMessage(message);
-      console.log('데이터 보냄');
-    }, 1000);
-  };
+  // const webViewRef = useRef(null);
+  //
+  // useEffect(() => {
+  //   sendMessageToWebView();
+  // }, []);
+  //
+  // const sendMessageToWebView = () => {
+  //   const message = 'Hello from React Native!';
+  //   setTimeout(() => {
+  //     webViewRef.current.postMessage(message);
+  //     console.log('데이터 보냄');
+  //   }, 1000);
+  // };
 
   return (
     <View style={{ flex: 1, paddingTop: 40 }}>
       <WebView
-        ref={webViewRef}
+        // ref={webViewRef}
         source={{ uri: `${server}/home` }}
         javaScriptEnabled={true}
         // onMessage={(event) => {

@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { TouchableOpacity, Modal, View, StyleSheet, Text, Image } from 'react-native';
 import Oheumwan_Camera from "../camera/camera";
+import ImagePickerExample from "../camera/imagePicker";
 import { WebView } from 'react-native-webview';
 import { server } from "../server";
 
 const Add = () => {
   const [isCameraVisible, setCameraVisible] = useState(false);
+  const [isGalleryVisible, setGalleryVisible] = useState(false);
   const [isWebViewVisible, setWebViewVisible] = useState(false);
 
   const webViewRef = useRef(null); // WebView의 ref 설정
@@ -30,10 +32,10 @@ const Add = () => {
       :
       (<View style={styles.modalContainer}>
         <TouchableOpacity style={styles.buttonWrapper} onPress={() => setCameraVisible(true)}>
-          <Text style={styles.buttonText}>이미지 인식</Text>
+          <Text style={styles.buttonText}>이미지 촬영</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonWrapper} onPress={() => { /* 레시피 추천 버튼을 눌렀을 때 실행되는 함수 */ }}>
-          <Text style={styles.buttonText}>레시피 추천</Text>
+        <TouchableOpacity style={styles.buttonWrapper} onPress={() => setGalleryVisible(true)}>
+          <Text style={styles.buttonText}>이미지 업로드</Text>
         </TouchableOpacity>
 
         <Modal visible={isCameraVisible} animationType="slide">
@@ -44,6 +46,12 @@ const Add = () => {
               setWebViewVisible(true);
               sendMessageToWebView(ImagePath)
             }}
+          />
+        </Modal>
+
+        <Modal visible={isGalleryVisible} animationType="slide">
+          <ImagePickerExample
+              onClose={() => setGalleryVisible(false)}
           />
         </Modal>
       </View>)
