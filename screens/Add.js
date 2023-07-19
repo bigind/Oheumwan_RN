@@ -19,7 +19,7 @@ const Add = () => {
     const obj = { filename, isLoading, isError } 
     setTimeout(() => {
       webViewRef.current.postMessage(JSON.stringify(obj));
-      console.log(filename, ' 이미지 웹뷰로 전송');
+      console.log(filename, ' 이미지 파일명 웹뷰로 전송');
     }, 1000);
   };
 
@@ -45,10 +45,10 @@ const Add = () => {
           <Oheumwan_Camera
             onClose={() => setCameraVisible(false)}
             onCapture={(filename, base64Data) => {
-              sendImageToServer(filename, base64Data);
-              setCameraVisible(false);
-              setWebViewVisible(true);
-              sendMessageToWebView(filename);
+              sendImageToServer(filename, base64Data);  // 서버(AWS S3)에 이미지 전송
+              setCameraVisible(false);     // 카메라 화면 종료
+              setWebViewVisible(true);     // 웹뷰 화면 로딩
+              sendMessageToWebView(filename);   // 웹뷰로 메시지 전송
             }}
           />
         </Modal>
@@ -56,6 +56,12 @@ const Add = () => {
         <Modal visible={isGalleryVisible} animationType="slide">
           <ImagePickerExample
               onClose={() => setGalleryVisible(false)}
+              onChoice={(filename, base64Data) => {
+                sendImageToServer(filename, base64Data);  // 서버(AWS S3)에 이미지 전송
+                setGalleryVisible(false)  // 갤러리 화면 종료
+                setWebViewVisible(true);     // 웹뷰 화면 로딩
+                sendMessageToWebView(filename);   // 웹뷰로 메시지 전송
+              }}
           />
         </Modal>
       </View>)

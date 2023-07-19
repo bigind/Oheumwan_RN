@@ -33,7 +33,7 @@ export default function Oheumwan_Camera({ onClose, onCapture }) {
       console.log("사진 정보 : ",photo)
 
       // 이미지를 1MB 이하로 리사이징합니다.
-      const resizedPhoto = await manipulateAsync(photo.uri, [{ resize: {width: photo.width/4, height: photo.height/4}}], {format: SaveFormat.JPEG});
+      const resizedPhoto = await manipulateAsync(photo.uri, [{ resize: {width: 640, height: 640}}], {format: SaveFormat.JPEG});
       console.log("사진 리사이징 : ",resizedPhoto);
 
       const filename = resizedPhoto.uri.substring(resizedPhoto.uri.lastIndexOf('/') + 1)
