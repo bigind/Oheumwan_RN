@@ -4,24 +4,58 @@ import Oheumwan_Camera from "../camera/camera";
 import ImagePickerExample from "../camera/imagePicker";
 import { WebView } from 'react-native-webview';
 import { server } from "../server";
-import useImageUpload from "../apis/useImageUpload"
+import axios from 'axios';
+// import useImageRecognize from "../apis/useImageRecognize"
 
 const Add = () => {
   const [isCameraVisible, setCameraVisible] = useState(false);
   const [isGalleryVisible, setGalleryVisible] = useState(false);
   const [isWebViewVisible, setWebViewVisible] = useState(false);
 
+  const [data, setData] = useState(null); // 이미지 분석 결과를 저장할 상태 변수
+
   const webViewRef = useRef(null); // WebView의 ref 설정
 
-  const { sendImageToServer, isLoading, isError } = useImageUpload();
+  useEffect(() => {
+    if (data) {
+      sendMessageToWebView();
+    }
+  }, [data])
 
-  const sendMessageToWebView = (filename) => {
-    const obj = { filename, isLoading, isError } 
+  const sendMessageToWebView = () => {
     setTimeout(() => {
-      webViewRef.current.postMessage(JSON.stringify(obj));
-      console.log(filename, ' 이미지 파일명 웹뷰로 전송');
+      webViewRef.current.postMessage(JSON.stringify(data));
+      console.log(data, '재료 데이터 웹뷰로 전송');
     }, 1000);
   };
+
+  // 이미지 S3 버킷에 업로드
+  async function sendImageToS3(filename, base64Image) {
+    const lambdaUrl =
+      "https://xs21gvtq40.execute-api.eu-central-1.amazonaws.com/oheumwan/upload-to-s3";
+
+    const imageData = {
+      name: filename, // 이미지 파일명
+      file: base64Image, // 이미지 데이터를 Base64로 인코딩한 문자열
+    };
+
+    await axios.post(lambdaUrl, imageData);
+    console.log("S3 업로드 성공!");
+  }
+
+  // 이미지 분석 요청
+  async function sendImageToRecognize(filename) {
+    const serverUrl =
+      "https://xs21gvtq40.execute-api.eu-central-1.amazonaws.com/oheumwan/image-recog";
+
+    try {
+      const response = await axios.get(`${serverUrl}?image=${filename}`);
+      console.log(response.data.body, "재료 추출 완료!");
+      setData(response.data.body);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   return (
     isWebViewVisible ?
@@ -45,23 +79,45 @@ const Add = () => {
           <Oheumwan_Camera
             onClose={() => setCameraVisible(false)}
             onCapture={(filename, base64Data) => {
-              sendImageToServer(filename, base64Data);  // 서버(AWS S3)에 이미지 전송
               setCameraVisible(false);     // 카메라 화면 종료
-              setWebViewVisible(true);     // 웹뷰 화면 로딩
-              sendMessageToWebView(filename);   // 웹뷰로 메시지 전송
+              setWebViewVisible(true);     // 웹뷰 화면 전환
+
+              try {
+                sendImageToS3(filename, base64Data);
+              } catch (err) {
+                console.error("Error:", err);
+                return;
+              }
+
+              try {
+                sendImageToRecognize(filename);
+              } catch (err) { 
+                console.log(err);
+              }
             }}
           />
         </Modal>
 
         <Modal visible={isGalleryVisible} animationType="slide">
           <ImagePickerExample
-              onClose={() => setGalleryVisible(false)}
-              onChoice={(filename, base64Data) => {
-                sendImageToServer(filename, base64Data);  // 서버(AWS S3)에 이미지 전송
-                setGalleryVisible(false)  // 갤러리 화면 종료
-                setWebViewVisible(true);     // 웹뷰 화면 로딩
-                sendMessageToWebView(filename);   // 웹뷰로 메시지 전송
-              }}
+            onClose={() => setGalleryVisible(false)}
+            onChoice={(filename, base64Data) => {
+              setGalleryVisible(false);  // 갤러리 화면 종료
+              setWebViewVisible(true);     // 웹뷰 화면 전환
+
+              try {
+                sendImageToS3(filename, base64Data);
+              } catch (err) {
+                console.error("Error:", err);
+                return;
+              }
+
+              try {
+                sendImageToRecognize(filename);
+              } catch (err) { 
+                console.log(err);
+              }
+            }}
           />
         </Modal>
       </View>)
