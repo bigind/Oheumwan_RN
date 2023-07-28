@@ -15,7 +15,7 @@ const App = () => {
 
 
   const REST_API_KEY = 'a467cb476cd5ac847ed6ce10094ddfcf' //REST API KEY
-  const REDIRECT_URI = 'http://192.168.0.15:3000/auth' //Redirect URI
+  const REDIRECT_URI = 'http://192.168.0.143:3000/auth' //Redirect URI
   const grantType = "authorization_code";
   // oauth 요청 URL
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`
@@ -24,7 +24,7 @@ const App = () => {
 
   const handleLogInProgress = (data) => {
     if (!isLogInProgress) {
-      isLogInProgress = true; // 중복 실행 방지를 위해 플래그를 true로 설정
+      //isLogInProgress = true; // 중복 실행 방지를 위해 플래그를 true로 설정
       const exp = "code=";
       var condition = data.indexOf(exp);
 
@@ -53,11 +53,13 @@ const App = () => {
       .then((res) => {
         console.log(res.data.body)
         user = res.data.body
+
         setIslogin(true);
 
         // 자료 저장하기
         const storeData = async tasks => {
           try {
+            await AsyncStorage.setItem('token', JSON.stringify(access_token));
             await AsyncStorage.setItem('member_id', JSON.stringify(user.member_id));
             await AsyncStorage.setItem('username', JSON.stringify(user.username));
             await AsyncStorage.setItem('registration_date', JSON.stringify(user.registration_date));
@@ -84,7 +86,7 @@ const App = () => {
 
   return (
     <>
-      {isLogin ?
+      {access_token ?
       <> 
       <AppNavigator/>
       </>

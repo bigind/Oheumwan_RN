@@ -32,13 +32,25 @@
       "supportsTablet": true
     },
     "android": {
+      "pakage": "com.bigind.oheumwan",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.bigind.Oheumwan"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "738f6b25-9248-4704-a21c-89f1d4a6edb2"
+      }
     }
   }
 }

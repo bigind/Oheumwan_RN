@@ -39,14 +39,17 @@ const Add = () => {
       file: base64Image, // 이미지 데이터를 Base64로 인코딩한 문자열
     };
 
-    await axios.post(lambdaUrl, imageData);
+    await axios.post(lambdaUrl, imageData)
+    .catch((err) => {
+      console.log(err);
+    });
     console.log("S3 업로드 성공!");
   }
 
   // 이미지 분석 요청
   async function sendImageToRecognize(filename) {
     const serverUrl =
-      "https://xs21gvtq40.execute-api.eu-central-1.amazonaws.com/oheumwan/image-recog";
+      "http://ec2-43-202-50-213.ap-northeast-2.compute.amazonaws.com:5000";
 
     try {
       const response = await axios.get(`${serverUrl}?image=${filename}`);
@@ -92,7 +95,7 @@ const Add = () => {
               try {
                 sendImageToRecognize(filename);
               } catch (err) { 
-                console.log(err);
+                console.log("이미지 인식 서버 : ",err);
               }
             }}
           />
