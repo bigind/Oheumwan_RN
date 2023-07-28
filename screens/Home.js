@@ -25,11 +25,11 @@ const HomeScreen = () => {
         // ref={webViewRef}
         source={{ uri: `${server}/home` }}
         javaScriptEnabled={true}
-        // onMessage={(event) => {
-        //   const message = event.nativeEvent.data;
-        //   console.log('Received message:', message);
-        //   // 원하는 작업 수행
-        // }}
+        onMessage={(event) => {
+          const message = event.nativeEvent.data;
+          console.log('Received message:', message);
+          // 원하는 작업 수행
+        }}
       />
     </View>
   );
