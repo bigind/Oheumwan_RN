@@ -72,7 +72,7 @@ const screenOptions = ({ route }) => ({
 export default function AppNavigator() {
   return (
     <NavigationContainer>
-        <Tab.Navigator screenOptions={screenOptions}>
+        <Tab.Navigator screenOptions={screenOptions} initialRouteName="추가">
             <Tab.Screen name="홈" component={HomeScreen} />
             <Tab.Screen name="커뮤니티" component={CommunityScreen} />
             <Tab.Screen name="추가" component={Add} options={{ tabBarLabel: '카메라' }}/>

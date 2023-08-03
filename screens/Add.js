@@ -7,7 +7,7 @@ import { server } from "../server";
 import axios from 'axios';
 // import useImageRecognize from "../apis/useImageRecognize"
 
-const Add = () => {
+const Add = ({ navigation }) => {
   const [isCameraVisible, setCameraVisible] = useState(false);
   const [isGalleryVisible, setGalleryVisible] = useState(false);
   const [isWebViewVisible, setWebViewVisible] = useState(false);
@@ -81,6 +81,10 @@ const Add = () => {
             console.log(data)
             setWebViewVisible(false); // 웹뷰 화면 전환
             setData(null); // 재료 데이터 초기화
+
+              if(data === "save"){
+                  navigation.navigate("보관함");
+              }
           }}
         />
       </View>)
