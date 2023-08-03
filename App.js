@@ -15,7 +15,7 @@ const App = () => {
 
 
   const REST_API_KEY = 'a467cb476cd5ac847ed6ce10094ddfcf' //REST API KEY
-  const REDIRECT_URI = 'http://192.168.0.143:3000/auth' //Redirect URI
+  const REDIRECT_URI = 'http://192.168.0.15:3000/auth' //Redirect URI
   const grantType = "authorization_code";
   // oauth 요청 URL
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`

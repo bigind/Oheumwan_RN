@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { TouchableOpacity, Modal, View, StyleSheet, Text, Image } from 'react-native';
+import {TouchableOpacity, Modal, View, StyleSheet, Text, Image, Alert} from 'react-native';
 import Oheumwan_Camera from "../camera/camera";
 import ImagePickerExample from "../camera/imagePicker";
 import { WebView } from 'react-native-webview';
@@ -53,8 +53,17 @@ const Add = () => {
 
     try {
       const response = await axios.get(`${serverUrl}?image=${filename}`);
-      console.log(response.data.body, "재료 추출 완료!");
-      setData(response.data.body);
+      console.log(response.data.statusCode);
+      if(response.data.statusCode === 400) {
+          console.log(response.data.body, "재료 인식 실패!");
+          setData(null);
+      }
+      else {
+          console.log(response.data.body, "재료 추출 완료!");
+          console.log(typeof (response.data.body));
+          setData(response.data.body);
+      }
+
     } catch (err) {
       console.log(err);
     }
@@ -67,6 +76,12 @@ const Add = () => {
           ref={webViewRef}
           source={{ uri: `${server}/getimage` }}
           javaScriptEnabled={true}
+          onMessage={(e) => {
+            const data = JSON.parse(e.nativeEvent.data);
+            console.log(data)
+            setWebViewVisible(false); // 웹뷰 화면 전환
+            setData(null); // 재료 데이터 초기화
+          }}
         />
       </View>)
       :

@@ -8,7 +8,7 @@ const MyboxScreen = () => {
   return (
     <View style={{ flex: 1, paddingTop: 40 }}>
       <WebView
-        source={{ uri: `${server}/community` }}
+        source={{ uri: `${server}/collect` }}
       />
     </View>
     // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
