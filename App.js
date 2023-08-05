@@ -33,7 +33,6 @@ const App = () => {
       if(token){
         console.log(token);
         Login(token);
-        setIsLogin(true);
       }
     };
 
@@ -87,8 +86,8 @@ const App = () => {
       token : access_token
     })
     .then((res) => {
-      return console.log("유저 정보",res.data.body)
       setIsLogin(true);
+      return console.log("유저 정보",res.data.body)
     })
     .catch((err) => {
       return console.log(err)
