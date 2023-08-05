@@ -11,7 +11,7 @@ import {getData} from "../utils/AsyncStorage";
 const Add = ({ navigation }) => {
     const [isCameraVisible, setCameraVisible] = useState(false);
     const [isGalleryVisible, setGalleryVisible] = useState(false);
-    const [isCameraMenuVisible, setCameraMenuVisible] = useState(false);
+    const [isCameraMenuVisible, setCameraMenuVisible] = useState(true);
 
     const [data, setData] = useState(null); // 이미지 분석 결과를 저장할 상태 변수
 
@@ -73,7 +73,7 @@ const Add = ({ navigation }) => {
     }
 
     return (
-        !isCameraMenuVisible ?
+        isCameraMenuVisible ?
             (
                 <View style={{ flex: 1, paddingTop: 40 }}>
                     <WebView
@@ -83,8 +83,6 @@ const Add = ({ navigation }) => {
                         onMessage={(e) => {
                             const data = JSON.parse(e.nativeEvent.data);
                             // console.log(data)
-                            setCameraMenuVisible(false); // 카메라 메뉴로 전환
-                            setData(null); // 재료 데이터 초기화
 
                             if(data === "camera"){
                                 setCameraVisible(true);
@@ -98,8 +96,8 @@ const Add = ({ navigation }) => {
                         <Oheumwan_Camera
                             onClose={() => setCameraVisible(false)}
                             onCapture={(filename, base64Data) => {
-                                setCameraVisible(false);     // 카메라 화면 종료
-                                setCameraMenuVisible(true);     // 카메라 메뉴로 전환
+                                setCameraVisible(false);     // 카메라 종료
+                                setCameraMenuVisible(false);    // 카메라 메뉴 종료
 
                                 try {
                                     sendImageToS3(filename, base64Data);
@@ -121,8 +119,8 @@ const Add = ({ navigation }) => {
                         <ImagePickerExample
                             onClose={() => setGalleryVisible(false)}
                             onChoice={(filename, base64Data) => {
-                                setGalleryVisible(false);  // 갤러리 화면 종료
-                                setCameraMenuVisible(true);     // 카메라 메뉴로 전환
+                                setGalleryVisible(false);  // 갤러리 종료
+                                setCameraMenuVisible(false);     // 카메라 메뉴로 종료
 
                                 try {
                                     sendImageToS3(filename, base64Data);
@@ -151,17 +149,23 @@ const Add = ({ navigation }) => {
                             console.log(data)
 
                             if(data === "save"){
-                                Alert.alert("알림", "보관함에 저장하였습니다!");
-                                navigation.navigate("보관함");
+                                Alert.alert("알림", "보관함에 저장하였습니다!", [{text: "확인",onPress: () => {
+                                        navigation.navigate("보관함");
+                                        setCameraMenuVisible(true);
+                                        setData(null); }, style: "default"}]);
                             }
                             if(data === "err"){
                                 Alert.alert("알림", "재료 보관에 실패했습니다");
                             }
                             if(data === "exit"){
                                 Alert.alert("경고", "모든 데이터가 사라집니다, 나가시겠습니까?",[
-                                    {text: "취소",onPress: () => {},style: "cancel"},
-                                    {text: "확인",onPress: () => { navigation.navigate("추가") },style: "default"}
+                                    {text: "취소",onPress: () => { console.log("exit cancel")},style: "cancel"},
+                                    {text: "확인",onPress: () => {setCameraMenuVisible(true); setData(null);},style: "destructive"}
                                 ])
+                            }
+                            if(data === "NonDataExit"){
+                                setCameraMenuVisible(true);
+                                setData(null);
                             }
                         }}
                     />
