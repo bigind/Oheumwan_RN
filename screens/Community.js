@@ -11,9 +11,6 @@ const CommunityScreen = () => {
         source={{ uri: `${server}/community` }}
       />
     </View>
-    // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    //   <Text>Community Screen</Text>
-    // </View>
   );
 };
 

@@ -5,6 +5,7 @@ import ImagePickerExample from "../camera/imagePicker";
 import { WebView } from 'react-native-webview';
 import { server } from "../server";
 import axios from 'axios';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // import useImageRecognize from "../apis/useImageRecognize"
 
 const Add = ({ navigation }) => {
@@ -12,11 +13,17 @@ const Add = ({ navigation }) => {
   const [isGalleryVisible, setGalleryVisible] = useState(false);
   const [isWebViewVisible, setWebViewVisible] = useState(false);
 
+  const [token,setToken] = useState("토큰 없음")
+
   const [data, setData] = useState(null); // 이미지 분석 결과를 저장할 상태 변수
+
 
   const webViewRef = useRef(null); // WebView의 ref 설정
 
   useEffect(() => {
+    // const token = AsyncStorage.getItem('token')
+    // setToken(token);
+
     if (data) {
       sendMessageToWebView();
     }
@@ -142,6 +149,10 @@ const Add = ({ navigation }) => {
             }}
           />
         </Modal>
+
+          <Text>
+              {token}
+          </Text>
       </View>)
   );
 };

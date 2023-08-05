@@ -2,13 +2,11 @@ import * as React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { HomeScreen, CommunityScreen, Add, ProfileScreen, SettingScreen, MyboxScreen } from './';
 
 const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
 
 const screenOptions = ({ route }) => ({
   tabBarShowLabel: true, // 라벨 설정

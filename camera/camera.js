@@ -18,15 +18,6 @@ export default function Oheumwan_Camera({ onClose, onCapture }) {
     })();
   }, []);
 
-  if (!permission || !permission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>카메라를 표시하기 위해 권한이 필요합니다</Text>
-        <Button onPress={requestPermission} title="권한 허용하기" />
-      </View>
-    );
-  }
-
   async function takePicture() {
     if (camera) {
       const photo = await camera.takePictureAsync();
