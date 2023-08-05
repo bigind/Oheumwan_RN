@@ -6,10 +6,12 @@ import { WebView } from 'react-native-webview';
 import { server } from "./server";
 import { getData, storeData } from "./utils/AsyncStorage";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const App = () => {
-  const [isLogin, setIsLogin] = useState(false);
-  const [access_token, setAccess_token] = useState(null);
+  const [isLogin, setIsLogin] = useState(false);  // 로그인 유무 (메인화면으로 이동)
+  const [access_token, setAccess_token] = useState(null);  // AsyncStorage 에서 가져온 토큰
+  const [isRefresh_token, setIsRefresh_token] = useState(true);  // 토큰 만료 유무 (만료 되면 재발급 받아야함.)
   const [iskakaoModal, setIskakakoModal] = useState(false);
 
   let isLogInProgress = false; // 여러 번 실행을 방지하기 위한 플래그 추가
@@ -25,14 +27,16 @@ const App = () => {
 
   // 앱 로딩전에 토큰이 AsyncStorage 에 있는지 확인
   useEffect(() => {
+    // AsyncStorage.clear();
     const fetchData = async () => {
       const token = await getData('token');
       setAccess_token(token);
 
-      // 토큰이 존재하면 바로 로그인 시도
+      // 토큰이 존재하면 로그인 시도
       if(token){
-        console.log(token);
-        Login(token);
+        console.log(access_token);
+        setIsRefresh_token(false);
+        setIskakakoModal(true);
       }
     };
 
@@ -49,7 +53,6 @@ const App = () => {
       if (condition !== -1) {
         var request_code = data.substring(condition + exp.length);
         console.log("인가 코드",request_code);
-        setIskakakoModal(false);  // 모달 종료
         requestToken(request_code); // 토큰값 받기
       }
     }
@@ -57,26 +60,30 @@ const App = () => {
 
   // 2. 발급 받은 인가코드를 이용해서 사용자 토큰을 발급
   const requestToken = (request_code) => {
-    axios.post(
-      `https://kauth.kakao.com/oauth/token?grant_type=${grantType}&client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&code=${request_code}`,
-      {},
-      { headers: { "Content-type": "application/x-www-form-urlencoded;charset=utf-8" } }
-    ).then((res) => {
+    if(isRefresh_token) {
+      axios.post(
+          `https://kauth.kakao.com/oauth/token?grant_type=${grantType}&client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&code=${request_code}`,
+          {},
+          { headers: { "Content-type": "application/x-www-form-urlencoded;charset=utf-8" } }
+      ).then((res) => {
 
-      // 유저 토큰
-      console.log("유저 토큰",res.data.access_token);
+        // 유저 토큰
+        console.log("유저 토큰",res.data.access_token);
 
-      // 토큰 세션에 저장
-      // storeData('token',res.data.access_token);
+        // 토큰 세션에 저장
+        storeData('token',res.data.access_token);
 
-      // 로그인
-      Login(res.data.access_token);
+        // 로그인
+        Login(res.data.access_token);
 
-    }).catch((err) => {
-      console.log('error', err);
-      setIskakakoModal(false);
-      Alert.alert("로그인에 실패했습니다.", err)
-    });
+      }).catch((err) => {
+        console.log('error', err);
+        Alert.alert("로그인에 실패했습니다.", err)
+      })
+    }else {
+      Login(access_token);
+    }
+
   };
 
   // 3. 서버로 로그인 요청
@@ -85,46 +92,55 @@ const App = () => {
     axios.post(LambdaLogin,{
       token : access_token
     })
-    .then((res) => {
-      setIsLogin(true);
-      return console.log("유저 정보",res.data.body)
-    })
-    .catch((err) => {
-      return console.log(err)
-    })
+        .then((res) => {
+          if(res.data.statusCode === 200){
+            console.log("유저 정보", res.data.body)
+            setIskakakoModal(false);
+            setIsLogin(true);
+          }else {
+            // console.error(`[${res.data.statusCode}] : ${res.data.body}`);
+            setIskakakoModal(false);
+            Alert.alert("알림","세션 만료로 인해 로그아웃 되었습니다.")
+            setIsRefresh_token(true);
+            AsyncStorage.clear();
+          }
+        })
+        .catch((err) => {
+          return console.log(err)
+        })
   };
 
   return (
-    <>
-      {isLogin ? <AppNavigator/>
-      :
-        <>
-          <View style={{ flex: 1, paddingTop: 40 }}>
-            <WebView
-              source={{ uri: `${server}/login` }}
-              javaScriptEnabled={true}
-              onMessage={(e) => {
-                const data = JSON.parse(e.nativeEvent.data);
-                setIskakakoModal(Boolean(data));
-              }}
-            />
-          </View>
+      <>
+        {isLogin ? <AppNavigator/>
+            :
+            <>
+              <View style={{ flex: 1, paddingTop: 40 }}>
+                <WebView
+                    source={{ uri: `${server}/login` }}
+                    javaScriptEnabled={true}
+                    onMessage={(e) => {
+                      const data = JSON.parse(e.nativeEvent.data);
+                      setIskakakoModal(Boolean(data));
+                    }}
+                />
+              </View>
 
-          <Modal visible={iskakaoModal} animationType="slide">
-            <View style={{ flex: 1 }}>
-              <WebView
-                originWhitelist={['*']}
-                scalesPageToFit={false}
-                source={{ uri: kakaoURL }}
-                injectedJavaScript={`window.ReactNativeWebView.postMessage("this is message from web")`}
-                javaScriptEnabled={true}
-                onMessage={(event) => { handleLogInProgress(event.nativeEvent["url"]); }}
-              />
-            </View>
-          </Modal>
-        </>
-      }
-    </>
+              <Modal visible={iskakaoModal} animationType="slide">
+                <View style={{ flex: 1 }}>
+                  <WebView
+                      originWhitelist={['*']}
+                      scalesPageToFit={false}
+                      source={{ uri: kakaoURL }}
+                      injectedJavaScript={`window.ReactNativeWebView.postMessage("this is message from web")`}
+                      javaScriptEnabled={true}
+                      onMessage={(event) => { handleLogInProgress(event.nativeEvent["url"]); }}
+                  />
+                </View>
+              </Modal>
+            </>
+        }
+      </>
   );
 };
 

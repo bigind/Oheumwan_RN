@@ -4,7 +4,7 @@ export const getData = async (key) => {
 
     try {
         const loadedData = await AsyncStorage.getItem(key)
-        console.log(key, "불러오기 완료", loadedData);
+        console.log(key, ":", loadedData);
         return loadedData;
     } catch(e) {
         console.log("AsyncStorage 불러오기 에러");

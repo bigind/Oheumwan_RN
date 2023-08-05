@@ -13,8 +13,6 @@ const Add = ({ navigation }) => {
     const [isGalleryVisible, setGalleryVisible] = useState(false);
     const [isCameraMenuVisible, setCameraMenuVisible] = useState(false);
 
-    const [token,setToken] = useState("")
-
     const [data, setData] = useState(null); // 이미지 분석 결과를 저장할 상태 변수
 
 
@@ -22,9 +20,6 @@ const Add = ({ navigation }) => {
     const webViewRef_CameraMenu = useRef(null);
 
     useEffect(() => {
-        // const token = AsyncStorage.getItem('token')
-        // setToken(token);
-
         if (data) {
             sendMessageToWebView();
         }
@@ -158,6 +153,15 @@ const Add = ({ navigation }) => {
                             if(data === "save"){
                                 Alert.alert("알림", "보관함에 저장하였습니다!");
                                 navigation.navigate("보관함");
+                            }
+                            if(data === "err"){
+                                Alert.alert("알림", "재료 보관에 실패했습니다");
+                            }
+                            if(data === "exit"){
+                                Alert.alert("경고", "모든 데이터가 사라집니다, 나가시겠습니까?",[
+                                    {text: "취소",onPress: () => {},style: "cancel"},
+                                    {text: "확인",onPress: () => { navigation.navigate("추가") },style: "default"}
+                                ])
                             }
                         }}
                     />
