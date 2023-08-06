@@ -149,10 +149,9 @@ const Add = ({ navigation }) => {
                             console.log(data)
 
                             if(data === "save"){
-                                Alert.alert("알림", "보관함에 저장하였습니다!", [{text: "확인",onPress: () => {
-                                        navigation.navigate("보관함");
-                                        setCameraMenuVisible(true);
-                                        setData(null); }, style: "default"}]);
+                                navigation.navigate("보관함");
+                                setCameraMenuVisible(true);
+                                setData(null);
                             }
                             if(data === "err"){
                                 Alert.alert("알림", "재료 보관에 실패했습니다");
