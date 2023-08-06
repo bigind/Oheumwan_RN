@@ -5,8 +5,6 @@ import ImagePickerExample from "../camera/imagePicker";
 import { WebView } from 'react-native-webview';
 import { server } from "../server";
 import axios from 'axios';
-import {getData} from "../utils/AsyncStorage";
-// import useImageRecognize from "../apis/useImageRecognize"
 
 const Add = ({ navigation }) => {
     const [isCameraVisible, setCameraVisible] = useState(false);
