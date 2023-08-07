@@ -27,7 +27,7 @@ const App = () => {
 
   // 앱 로딩전에 토큰이 AsyncStorage 에 있는지 확인
   useEffect(() => {
-    // AsyncStorage.clear();
+    setIsLogin(true);
     const fetchData = async () => {
       const token = await getData('token');
       setAccess_token(token);
